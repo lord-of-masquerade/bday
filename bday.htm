@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday 🎉</title>
+  <style>
+    :root{
+      --bg:#0b1020;--card:#121a33;--accent:#9d7dff;--accent2:#7ec8ff;--text:#f4f7ff;--muted:#c8d0ff;
+      --blue:#5aa4ff;--blue2:#2f6bff;--leaf:#46b07b;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Noto Sans,Arial;background:radial-gradient(1200px 800px at 20% -10%, #1a2352 0%, transparent 60%),radial-gradient(1000px 600px at 80% -10%, #3a1a52 0%, transparent 60%),var(--bg);color:var(--text);overflow-x:hidden}
+    a{color:var(--muted)}
+    .hidden{display:none}
+    .center{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;text-align:center;padding:24px}
+    input,button{padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:var(--text);margin:6px;font-size:16px}
+    input::placeholder{color:#bfc7ff}
+    button{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.3)}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,.25)}
+
+    /* hydrangea decorations */
+    .flora{position:fixed;inset:0;pointer-events:none}
+    .hydra{position:absolute;opacity:.9;animation:float 10s ease-in-out infinite}
+    .h1{left:-60px;bottom:-40px;transform:rotate(-6deg)}
+    .h2{right:-60px;top:-40px;transform:rotate(8deg);animation-delay:2.4s}
+    .h3{right:-40px;bottom:-20px;transform:rotate(-12deg);animation-delay:4s}
+    @keyframes float{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-8px) rotate(calc(var(--rot,0deg) + 2deg))}}
+
+    /* stars */
+    .stars{position:fixed;inset:0;pointer-events:none;opacity:.35}
+
+    /* celebration layout */
+    .wrap{max-width:1100px;margin:auto;padding:24px}
+    .grid{display:grid;gap:16px}
+    @media(min-width:900px){.grid{grid-template-columns:1.2fr .8fr}}
+
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+    h1{font-size:clamp(32px,5vw,56px);margin:6px 0 10px}
+    .subtitle{color:var(--muted)}
+    .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+
+    /* cake */
+    svg{max-width:520px;width:100%;height:auto}
+    .flame{transform-origin:50% 100%;animation:flicker .12s infinite alternate ease-in-out}
+    @keyframes flicker{from{transform:scaleY(1) translateX(-1px)}to{transform:scaleY(1.05) translateX(1px)}}
+    .smoke{opacity:0;animation:rise 1.5s ease-out forwards}
+    @keyframes rise{from{opacity:0;transform:translateY(0)}to{opacity:1;transform:translateY(-40px)}}
+
+    /* cats */
+    .cats{position:fixed;left:0;right:0;bottom:6px;pointer-events:none}
+    .cat{position:absolute;bottom:0;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+    .cat.sit{left:16px}
+    .cat.sit2{right:24px;scale:-1 1}
+    .tail{transform-origin:90% 50%;animation:wag 2.6s ease-in-out infinite}
+    @keyframes wag{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-8deg)}}
+    .blink circle{animation:blink 5s infinite}
+    @keyframes blink{0%,48%,52%,100%{ry:4}50%{ry:0.6}}
+
+    footer{opacity:.8;text-align:center;font-size:12px;padding:20px}
+  </style>
+</head>
+<body>
+  <!-- hydrangea clusters -->
+  <div class="flora" aria-hidden="true">
+    <svg class="hydra h1" width="280" height="220" viewBox="0 0 280 220">
+      <g>
+        <g transform="translate(0,40)"><use href="#cluster"/></g>
+        <g transform="translate(120,0) scale(1.1)"><use href="#cluster"/></g>
+      </g>
+    </svg>
+    <svg class="hydra h2" width="240" height="200" viewBox="0 0 280 220" style="--rot:8deg">
+      <use href="#cluster"/>
+    </svg>
+    <svg class="hydra h3" width="200" height="180" viewBox="0 0 280 220" style="--rot:-12deg">
+      <use href="#cluster"/>
+    </svg>
+  </div>
+
+  <!-- Step 1: Collect Info -->
+  <div class="center" id="intro">
+    <h1>🎂 Birthday Wish Generator</h1>
+    <p class="subtitle">Add your friend’s details to bloom hydrangeas, summon cats, and light the cake ✨</p>
+    <div>
+      <input type="text" id="friendNameInput" placeholder="Enter friend's name" />
+      <input type="date" id="dobInput" />
+    </div>
+    <button id="startBtn">Start Celebration</button>
+  </div>
+
+  <!-- Step 2: Celebration Interface -->
+  <div id="celebration" class="hidden">
+    <canvas class="stars"></canvas>
+    <div class="wrap">
+      <header class="center" style="min-height:unset">
+        <div class="badge subtitle">A wish from <span id="fromName">lord kai</span></div>
+        <h1>Happy Birthday, <span id="friendName"></span> ✨</h1>
+        <p class="subtitle" id="subtitle">May this orbit around the sun be your brightest yet—gentle in lessons, fierce in love, abundant in miracles.</p>
+        <div class="controls">
+          <button id="confettiBtn">Launch Confetti</button>
+          <button id="blowBtn">Blow Out Candles</button>
+          <button id="lightBtn" class="secondary">Relight</button>
+        </div>
+      </header>
+
+      <section class="grid">
+        <div class="card center">
+          <!-- SVG CAKE -->
+          <svg viewBox="0 0 320 320" id="cake" aria-label="Birthday cake with candles" role="img">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#9d7dff"/>
+                <stop offset="1" stop-color="#7ec8ff"/>
+              </linearGradient>
+            </defs>
+            <ellipse cx="160" cy="260" rx="110" ry="18" fill="#2a335d" />
+            <rect x="60" y="160" width="200" height="70" rx="12" fill="#ffb3d9" />
+            <path d="M60 190 Q110 210 160 190 T260 190 V230 H60 Z" fill="#ffd6e9"/>
+            <path d="M60 160 H260 V190 Q230 205 210 190 Q190 205 170 190 Q150 205 130 190 Q110 205 90 190 Q75 200 60 190 Z" fill="#fff" opacity=".9"/>
+            <rect x="85" y="120" width="150" height="50" rx="10" fill="url(#g1)" />
+            <path d="M85 135 Q120 150 160 135 T235 135 V160 H85 Z" fill="#c7b6ff" />
+            <path d="M85 120 H235 V135 Q220 145 205 135 Q190 145 175 135 Q160 145 145 135 Q130 145 115 135 Q100 145 85 135 Z" fill="#fff" opacity=".95"/>
+
+            <g id="candles" transform="translate(0,0)">
+              <g transform="translate(120,95)">
+                <rect x="-6" y="0" width="12" height="35" rx="2" fill="#ffd166"/>
+                <rect x="-6" y="8" width="12" height="3" fill="#ff9f1c" opacity=".5"/>
+                <path class="flame" d="M0,-14 C6,-6 4,0 0,0 C-4,0 -6,-6 0,-14Z" fill="#ffea00" />
+                <circle cx="0" cy="0" r="2" fill="#333"/>
+              </g>
+              <g transform="translate(160,92)">
+                <rect x="-6" y="0" width="12" height="38" rx="2" fill="#7dd3fc"/>
+                <rect x="-6" y="10" width="12" height="3" fill="#38bdf8" opacity=".5"/>
+                <path class="flame" d="M0,-14 C6,-6 4,0 0,0 C-4,0 -6,-6 0,-14Z" fill="#ffea00" />
+                <circle cx="0" cy="0" r="2" fill="#333"/>
+              </g>
+              <g transform="translate(200,95)">
+                <rect x="-6" y="0" width="12" height="35" rx="2" fill="#fca5a5"/>
+                <rect x="-6" y="8" width="12" height="3" fill="#f87171" opacity=".5"/>
+                <path class="flame" d="M0,-14 C6,-6 4,0 0,0 C-4,0 -6,-6 0,-14Z" fill="#ffea00" />
+                <circle cx="0" cy="0" r="2" fill="#333"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="card">
+          <h3 id="headline">A small wish, a vast sky</h3>
+          <p id="wishMsg" style="font-size:18px;line-height:1.6"></p>
+          <div class="controls">
+            <button id="confettiBtn2">More Confetti</button>
+          </div>
+          <h4>Countdown to next birthday</h4>
+          <p class="subtitle" id="countdown"></p>
+        </div>
+      </section>
+
+      <footer>Crafted with joy · © <span id="year"></span> · Made for <span id="friendName2"></span></footer>
+    </div>
+
+    <!-- Cats layer -->
+    <div class="cats" aria-hidden="true">
+      <!-- sitting cat left -->
+      <svg class="cat sit" width="140" height="100" viewBox="0 0 140 100">
+        <g fill="#eaeaff">
+          <ellipse cx="70" cy="92" rx="36" ry="8" opacity=".2"/>
+          <path d="M40,84 C40,60 50,54 62,46 L62,30 L74,42 L88,36 L86,56 C92,66 94,78 86,86 Z"/>
+          <path class="tail" d="M86,72 C110,70 118,80 118,86 C118,92 110,94 100,92" fill="none" stroke="#eaeaff" stroke-width="6" stroke-linecap="round"/>
+          <g class="blink">
+            <ellipse cx="64" cy="50" rx="4" ry="4" fill="#0b1020"/>
+            <ellipse cx="78" cy="48" rx="4" ry="4" fill="#0b1020"/>
+          </g>
+        </g>
+      </svg>
+      <!-- sitting cat right (mirrored) -->
+      <svg class="cat sit2" width="140" height="100" viewBox="0 0 140 100">
+        <g fill="#eaeaff">
+          <ellipse cx="70" cy="92" rx="36" ry="8" opacity=".2"/>
+          <path d="M40,84 C40,60 50,54 62,46 L62,30 L74,42 L88,36 L86,56 C92,66 94,78 86,86 Z"/>
+          <path class="tail" d="M86,72 C110,70 118,80 118,86 C118,92 110,94 100,92" fill="none" stroke="#eaeaff" stroke-width="6" stroke-linecap="round"/>
+          <g class="blink">
+            <ellipse cx="64" cy="50" rx="4" ry="4" fill="#0b1020"/>
+            <ellipse cx="78" cy="48" rx="4" ry="4" fill="#0b1020"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- defs for hydrangea cluster -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <g id="petal">
+        <path d="M0,0 C6,-6 14,-6 20,0 C14,6 6,6 0,0 Z" fill="#7fb8ff"/>
+      </g>
+      <g id="flower">
+        <use href="#petal" transform="translate(-10,0) rotate(0)"/>
+        <use href="#petal" transform="translate(0,-10) rotate(90)"/>
+        <use href="#petal" transform="translate(10,0) rotate(180)"/>
+        <use href="#petal" transform="translate(0,10) rotate(270)"/>
+        <circle cx="0" cy="0" r="2.6" fill="#cfe6ff"/>
+      </g>
+      <g id="cluster">
+        <g transform="translate(60,80)"><use href="#flower"/></g>
+        <g transform="translate(90,60) scale(1.2)"><use href="#flower"/></g>
+        <g transform="translate(30,40) scale(.9)"><use href="#flower"/></g>
+        <g transform="translate(120,100) scale(1.1)"><use href="#flower"/></g>
+        <g transform="translate(150,70)"><use href="#flower"/></g>
+        <g transform="translate(70,120)"><use href="#flower"/></g>
+        <!-- leaves -->
+        <path d="M40,130 C60,120 80,120 98,132 C76,150 56,150 40,130 Z" fill="#46b07b" opacity=".8"/>
+        <path d="M120,140 C140,130 160,130 178,142 C156,160 136,160 120,140 Z" fill="#46b07b" opacity=".8"/>
+      </g>
+    </defs>
+  </svg>
+
+  <script>
+    // Intro -> Celebration
+    const intro = document.getElementById('intro');
+    const celebration = document.getElementById('celebration');
+    const friendNameSpan = document.getElementById('friendName');
+    const friendName2 = document.getElementById('friendName2');
+    const wishMsg = document.getElementById('wishMsg');
+    const countdown = document.getElementById('countdown');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      const name = document.getElementById('friendNameInput').value.trim() || "Friend";
+      const dob = document.getElementById('dobInput').value;
+      if(!dob){alert("Please enter a date of birth");return;}
+      intro.classList.add('hidden');
+      celebration.classList.remove('hidden');
+
+      friendNameSpan.textContent = name; friendName2.textContent = name;
+      wishMsg.textContent = `On this day, the world shines brighter because of you, ${name}. May your year be filled with joy, courage, and dreams fulfilled.`;
+
+      // Countdown to next birthday
+      function renderCountdown(){
+        const now = new Date();
+        const birth = new Date(dob);
+        const target = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
+        if(target < now) target.setFullYear(now.getFullYear()+1);
+        const diff = target - now;
+        const d = Math.floor(diff/1000/60/60/24);
+        const h = Math.floor(diff/1000/60/60)%24;
+        const m = Math.floor(diff/1000/60)%60;
+        const s = Math.floor(diff/1000)%60;
+        countdown.textContent = `${d} days ${h}h ${m}m ${s}s until your next birthday!`;
+      }
+      renderCountdown(); setInterval(renderCountdown,1000);
+      confetti();
+    });
+
+    // Stars canvas
+    const starC = document.createElement('canvas');
+    starC.className='stars'; document.body.appendChild(starC);
+    const ctx = starC.getContext('2d');
+    function resize(){ starC.width = innerWidth; starC.height = innerHeight; }
+    addEventListener('resize', resize); resize();
+    const stars=[]; for(let i=0;i<160;i++){ stars.push({x:Math.random()*starC.width,y:Math.random()*starC.height,r:Math.random()*1.5+0.3, tw:Math.random()*1}); }
+    function drawStars(){ ctx.clearRect(0,0,starC.width,starC.height); stars.forEach(s=>{ ctx.globalAlpha = 0.4+0.6*Math.abs(Math.sin((performance.now()/8000)+s.tw)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle='#ffffff'; ctx.fill();}); requestAnimationFrame(drawStars); } drawStars();
+
+    // Cake controls
+    const candles = document.getElementById('candles');
+    document.getElementById('blowBtn').addEventListener('click', ()=>{
+      candles.querySelectorAll('.flame').forEach(f=>{ f.style.display='none';
+        const smoke = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        smoke.setAttribute('cx', '0'); smoke.setAttribute('cy', '0'); smoke.setAttribute('r','2'); smoke.setAttribute('fill','#ddd'); smoke.setAttribute('class','smoke');
+        f.parentNode.appendChild(smoke); setTimeout(()=> smoke.remove(),1600);
+      });
+      confetti(220);
+    });
+    document.getElementById('lightBtn').addEventListener('click', ()=>{
+      candles.querySelectorAll('.flame').forEach(f=> f.style.display='block');
+    });
+
+    // Confetti
+    function confetti(n=160){
+      const c = document.createElement('canvas'); c.width=innerWidth; c.height=innerHeight; c.style.position='fixed'; c.style.inset='0'; c.style.pointerEvents='none'; document.body.appendChild(c);
+      const x = c.getContext('2d');
+      const parts = Array.from({length:n},()=>({x: Math.random()*c.width,y: -20 - Math.random()*c.height,r: 4+Math.random()*6,a: Math.random()*Math.PI*2,v: 1+Math.random()*3,s: 0.5+Math.random()}));
+      let t=0; (function tick(){ x.clearRect(0,0,c.width,c.height); parts.forEach(p=>{ p.y += p.v; p.x += Math.sin(p.a + t/30)*p.s; p.a += 0.02; x.save(); x.translate(p.x,p.y); x.rotate(p.a); x.fillStyle = `hsl(${(p.x+p.y)%360}, 90%, 60%)`; x.fillRect(-p.r/2, -p.r/2, p.r, p.r); x.restore();}); t++; if(t<280){ requestAnimationFrame(tick);} else { c.remove(); }})();
+    }
+    document.getElementById('confettiBtn').addEventListener('click', ()=> confetti());
+    document.getElementById('confettiBtn2').addEventListener('click', ()=> confetti());
+  </script>
+</body>
+</html>
